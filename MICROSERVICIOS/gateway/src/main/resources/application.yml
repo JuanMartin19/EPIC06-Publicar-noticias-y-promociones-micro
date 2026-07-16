@@ -30,6 +30,13 @@ spring:
               filters:
                 - StripPrefix=0
 
+            - id: ms-comercial
+              uri: lb://ms-comercial
+              predicates:
+                - Path=/api/noticias/**, /api/promociones/**, /api/imagenes/**
+              filters:
+                - StripPrefix=0
+
 eureka:
   client:
     service-url:

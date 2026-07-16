@@ -22,6 +22,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Lectura: ambos roles pueden
                 .requestMatchers(HttpMethod.GET, "/api/entity-a/**", "/api/entity-b/**").hasAnyRole("USER", "ADMIN")
+
+                // NUEVO: Hacer PÚBLICA la lectura de imágenes para que cualquiera vea la página
+                .requestMatchers(HttpMethod.GET, "/api/noticias/**", "/api/promociones/**", "/api/imagenes/**").permitAll()
+                
+                // NUEVO: Solo ADMIN puede crear o borrar imágenes/promociones
+                .requestMatchers(HttpMethod.POST, "/api/noticias/**", "/api/promociones/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/noticias/**", "/api/promociones/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/noticias/**", "/api/promociones/**").hasRole("ADMIN")
+
                 // Escritura: solo ADMIN
                 .requestMatchers(HttpMethod.POST, "/api/entity-a/**", "/api/entity-b/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/entity-a/**", "/api/entity-b/**").hasRole("ADMIN")
