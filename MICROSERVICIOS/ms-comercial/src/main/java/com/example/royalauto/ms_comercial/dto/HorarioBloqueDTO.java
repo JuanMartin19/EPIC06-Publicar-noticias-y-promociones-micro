@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContactoDTO {
+public class HorarioBloqueDTO {
     private Long id;
-    private String telefono;
-    private String email;
-    private String direccion;
-    private List<HorarioBloqueDTO> bloquesHorario;
+    private String diaInicio;
+    private String diaFin;
+    private String horaInicio;
+    private String horaFin;
 }
