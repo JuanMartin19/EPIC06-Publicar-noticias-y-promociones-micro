@@ -19,4 +19,3 @@ public class ImagenVehiculo {
     @JoinColumn(name = "vehiculo_id", nullable = false)
     private Vehiculo vehiculo;
 }
-

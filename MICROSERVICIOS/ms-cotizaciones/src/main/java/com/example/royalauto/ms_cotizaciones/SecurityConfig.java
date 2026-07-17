@@ -1,4 +1,4 @@
-package com.example.royalauto.ms_comercial;
+package com.example.royalauto.ms_cotizaciones;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
