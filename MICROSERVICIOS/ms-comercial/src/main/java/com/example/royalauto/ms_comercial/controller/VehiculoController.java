@@ -109,4 +109,19 @@ public class VehiculoController {
         categoriaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/marcas/{id}")
+    public ResponseEntity<MarcaDTO> actualizarMarca(@PathVariable Long id, @RequestBody MarcaDTO dto) {
+        return ResponseEntity.ok(marcaService.actualizar(id, dto));
+    }
+
+    @PutMapping("/categorias/{id}")
+    public ResponseEntity<CategoriaDTO> actualizarCategoria(@PathVariable Long id, @RequestBody CategoriaDTO dto) {
+        return ResponseEntity.ok(categoriaService.actualizar(id, dto));
+    }
+
+    @GetMapping("/filtrar/anio")
+    public ResponseEntity<List<VehiculoDTO>> filtrarPorAnio(@RequestParam Integer anio) {
+        return ResponseEntity.ok(vehiculoService.filtrarPorAnio(anio));
+    }
 }

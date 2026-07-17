@@ -1,6 +1,5 @@
 package com.example.royalauto.ms_comercial.service;
 
-
 import com.example.royalauto.ms_comercial.dto.CategoriaDTO;
 import com.example.royalauto.ms_comercial.entity.Categoria;
 import com.example.royalauto.ms_comercial.repository.CategoriaRepository;
@@ -24,6 +23,13 @@ public class CategoriaService {
 
     public CategoriaDTO crear(CategoriaDTO dto) {
         Categoria categoria = new Categoria();
+        categoria.setNombre(dto.getNombre());
+        return toDTO(categoriaRepository.save(categoria));
+    }
+
+    public CategoriaDTO actualizar(Long id, CategoriaDTO dto) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + id));
         categoria.setNombre(dto.getNombre());
         return toDTO(categoriaRepository.save(categoria));
     }

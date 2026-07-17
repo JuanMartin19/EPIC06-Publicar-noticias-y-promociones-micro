@@ -19,13 +19,25 @@ public class VehiculoDTO {
     private String categoriaNombre;
     private List<String> imagenes;
 
+    // --- Ficha técnica ---
+    private String motor;
+    private String transmision;
+    private String tipoCombustible;
+    private String potencia;
+    private String torque;
+    private String rendimiento;
+    private String traccion;
+    private String velocidadMaxima;
+    private String aceleracion;
+    private Integer capacidadPasajeros;
+
     // --- NUESTROS CAMPOS (Para la vista previa de Promociones) ---
     private BigDecimal precioOriginal;
     private String imagenUrl;
-    private String marcaVehiculo;     
-    private String categoriaVehiculo; 
+    private String marcaVehiculo;
+    private String categoriaVehiculo;
     private Long promocionId;
-    private String tipoDescuento; 
-    private Double valorDescuento; 
-    private BigDecimal precioFinal; 
+    private String tipoDescuento;
+    private Double valorDescuento;
+    private BigDecimal precioFinal;
 }
