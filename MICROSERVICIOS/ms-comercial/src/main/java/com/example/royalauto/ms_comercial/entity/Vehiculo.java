@@ -31,7 +31,6 @@ public class Vehiculo {
     @Column(nullable = false)
     private Boolean disponible = true;
 
-    // Relación DENTRO del mismo microservicio -> sí se usa FK real
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "marca_id", nullable = false)
     private Marca marca;
@@ -43,4 +42,3 @@ public class Vehiculo {
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImagenVehiculo> imagenes = new ArrayList<>();
 }
-

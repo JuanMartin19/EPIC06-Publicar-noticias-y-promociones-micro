@@ -1,6 +1,5 @@
 package com.example.royalauto.ms_comercial.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,4 +15,3 @@ public class Categoria {
     @Column(nullable = false, length = 100, unique = true)
     private String nombre;
 }
-
