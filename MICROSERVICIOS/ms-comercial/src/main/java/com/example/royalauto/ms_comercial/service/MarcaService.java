@@ -29,6 +29,15 @@ public class MarcaService {
         return toDTO(marcaRepository.save(marca));
     }
 
+    public MarcaDTO actualizar(Long id, MarcaDTO dto) {
+        Marca marca = marcaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + id));
+        marca.setNombre(dto.getNombre());
+        marca.setLogo(dto.getLogo());
+        marca.setDescripcion(dto.getDescripcion());
+        return toDTO(marcaRepository.save(marca));
+    }
+
     public void eliminar(Long id) {
         marcaRepository.deleteById(id);
     }

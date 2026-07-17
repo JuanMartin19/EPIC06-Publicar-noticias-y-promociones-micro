@@ -31,6 +31,36 @@ public class Vehiculo {
     @Column(nullable = false)
     private Boolean disponible = true;
 
+    @Column(length = 100)
+private String motor;
+
+@Column(length = 100)
+private String transmision;
+
+@Column(length = 50)
+private String tipoCombustible;
+
+@Column(length = 50)
+private String potencia;
+
+@Column(length = 50)
+private String torque;
+
+@Column(length = 50)
+private String rendimiento;
+
+@Column(length = 50)
+private String traccion;
+
+@Column(length = 50)
+private String velocidadMaxima;
+
+@Column(length = 50)
+private String aceleracion;
+
+@Column
+private Integer capacidadPasajeros;
+
     // Relación DENTRO del mismo microservicio -> sí se usa FK real
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "marca_id", nullable = false)

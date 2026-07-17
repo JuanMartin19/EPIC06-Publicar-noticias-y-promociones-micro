@@ -1,6 +1,5 @@
 package com.example.royalauto.ms_comercial.service;
 
-
 import com.example.royalauto.ms_comercial.dto.VehiculoDTO;
 import com.example.royalauto.ms_comercial.entity.Categoria;
 import com.example.royalauto.ms_comercial.entity.ImagenVehiculo;
@@ -75,6 +74,12 @@ public class VehiculoService {
                 .collect(Collectors.toList());
     }
 
+    public List<VehiculoDTO> filtrarPorAnio(Integer anio) {
+        return vehiculoRepository.findByAnio(anio).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
     // ---------- Conversión manual (sin mapper) ----------
 
     private VehiculoDTO toDTO(Vehiculo vehiculo) {
@@ -92,6 +97,19 @@ public class VehiculoService {
         dto.setImagenes(vehiculo.getImagenes().stream()
                 .map(ImagenVehiculo::getUrl)
                 .collect(Collectors.toList()));
+
+        // Ficha técnica
+        dto.setMotor(vehiculo.getMotor());
+        dto.setTransmision(vehiculo.getTransmision());
+        dto.setTipoCombustible(vehiculo.getTipoCombustible());
+        dto.setPotencia(vehiculo.getPotencia());
+        dto.setTorque(vehiculo.getTorque());
+        dto.setRendimiento(vehiculo.getRendimiento());
+        dto.setTraccion(vehiculo.getTraccion());
+        dto.setVelocidadMaxima(vehiculo.getVelocidadMaxima());
+        dto.setAceleracion(vehiculo.getAceleracion());
+        dto.setCapacidadPasajeros(vehiculo.getCapacidadPasajeros());
+
         return dto;
     }
 
@@ -101,6 +119,18 @@ public class VehiculoService {
         vehiculo.setPrecio(dto.getPrecio());
         vehiculo.setDescripcion(dto.getDescripcion());
         vehiculo.setDisponible(dto.getDisponible() != null ? dto.getDisponible() : true);
+
+        // Ficha técnica
+        vehiculo.setMotor(dto.getMotor());
+        vehiculo.setTransmision(dto.getTransmision());
+        vehiculo.setTipoCombustible(dto.getTipoCombustible());
+        vehiculo.setPotencia(dto.getPotencia());
+        vehiculo.setTorque(dto.getTorque());
+        vehiculo.setRendimiento(dto.getRendimiento());
+        vehiculo.setTraccion(dto.getTraccion());
+        vehiculo.setVelocidadMaxima(dto.getVelocidadMaxima());
+        vehiculo.setAceleracion(dto.getAceleracion());
+        vehiculo.setCapacidadPasajeros(dto.getCapacidadPasajeros());
 
         Marca marca = marcaRepository.findById(dto.getMarcaId())
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + dto.getMarcaId()));
@@ -120,7 +150,8 @@ public class VehiculoService {
             });
         }
 
+        
+
         return vehiculo;
     }
 }
-

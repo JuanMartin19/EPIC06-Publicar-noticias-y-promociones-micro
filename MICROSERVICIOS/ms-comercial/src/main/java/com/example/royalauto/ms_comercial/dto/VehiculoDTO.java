@@ -23,4 +23,15 @@ public class VehiculoDTO {
     private String categoriaNombre;
 
     private List<String> imagenes;
+
+    private String motor;
+    private String transmision;
+    private String tipoCombustible;
+    private String potencia;
+    private String torque;
+    private String rendimiento;
+    private String traccion;
+    private String velocidadMaxima;
+    private String aceleracion;
+    private Integer capacidadPasajeros;
 }
