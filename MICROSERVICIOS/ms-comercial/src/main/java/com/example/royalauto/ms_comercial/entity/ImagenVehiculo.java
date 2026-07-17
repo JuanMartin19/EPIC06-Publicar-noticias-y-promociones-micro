@@ -1,5 +1,6 @@
 package com.example.royalauto.ms_comercial.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,6 +18,6 @@ public class ImagenVehiculo {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vehiculo_id", nullable = false)
+    @JsonIgnore
     private Vehiculo vehiculo;
 }
-

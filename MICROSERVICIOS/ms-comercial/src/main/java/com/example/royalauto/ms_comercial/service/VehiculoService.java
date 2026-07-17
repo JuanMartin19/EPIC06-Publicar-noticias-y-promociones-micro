@@ -35,6 +35,13 @@ public class VehiculoService {
         return toDTO(vehiculo);
     }
 
+    // Consulta en lote (ej. para que ms-cotizaciones resuelva varios vehículos con una sola llamada)
+    public List<VehiculoDTO> obtenerPorIds(List<Long> ids) {
+        return vehiculoRepository.findAllById(ids).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
     // E1HU1: Crear registros de nuevos vehículos
     public VehiculoDTO crear(VehiculoDTO dto) {
         Vehiculo vehiculo = toEntity(dto, new Vehiculo());
@@ -80,20 +87,22 @@ public class VehiculoService {
                 .collect(Collectors.toList());
     }
 
-    // ---------- Conversión manual (sin mapper) ----------
+    // ---------- Conversión manual (sin mapper) FUSIONADA ----------
 
     private VehiculoDTO toDTO(Vehiculo vehiculo) {
         VehiculoDTO dto = new VehiculoDTO();
         dto.setId(vehiculo.getId());
         dto.setModelo(vehiculo.getModelo());
         dto.setAnio(vehiculo.getAnio());
-        dto.setPrecio(vehiculo.getPrecio());
+        dto.setPrecio(vehiculo.getPrecio()); // Campo del pull
         dto.setDescripcion(vehiculo.getDescripcion());
         dto.setDisponible(vehiculo.getDisponible());
         dto.setMarcaId(vehiculo.getMarca().getId());
-        dto.setMarcaNombre(vehiculo.getMarca().getNombre());
+        dto.setMarcaNombre(vehiculo.getMarca().getNombre()); // Campo del pull
         dto.setCategoriaId(vehiculo.getCategoria().getId());
-        dto.setCategoriaNombre(vehiculo.getCategoria().getNombre());
+        dto.setCategoriaNombre(vehiculo.getCategoria().getNombre()); // Campo del pull
+
+        // Lógica de imágenes del pull (lista de Strings)
         dto.setImagenes(vehiculo.getImagenes().stream()
                 .map(ImagenVehiculo::getUrl)
                 .collect(Collectors.toList()));
@@ -109,6 +118,26 @@ public class VehiculoService {
         dto.setVelocidadMaxima(vehiculo.getVelocidadMaxima());
         dto.setAceleracion(vehiculo.getAceleracion());
         dto.setCapacidadPasajeros(vehiculo.getCapacidadPasajeros());
+
+        // --- NUESTROS CAMPOS DE COMPATIBILIDAD (Para el Marketing Dashboard) ---
+        // Llenamos precioOriginal con el precio base del auto
+        dto.setPrecioOriginal(vehiculo.getPrecio());
+
+        // Mapeamos los nombres de marca y categoría a nuestras variables de DTO
+        if (vehiculo.getMarca() != null) {
+            dto.setMarcaVehiculo(vehiculo.getMarca().getNombre());
+        }
+        if (vehiculo.getCategoria() != null) {
+            dto.setCategoriaVehiculo(vehiculo.getCategoria().getNombre());
+        }
+
+        // Foto principal para la vista previa del Admin
+        if (vehiculo.getImagenes() != null && !vehiculo.getImagenes().isEmpty()) {
+            dto.setImagenUrl(vehiculo.getImagenes().get(0).getUrl());
+        } else {
+            dto.setImagenUrl("https://via.placeholder.com/400x220?text=Sin+Foto");
+        }
+        // ---
 
         return dto;
     }
@@ -149,8 +178,6 @@ public class VehiculoService {
                 vehiculo.getImagenes().add(img);
             });
         }
-
-        
 
         return vehiculo;
     }

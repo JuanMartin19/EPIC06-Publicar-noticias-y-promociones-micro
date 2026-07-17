@@ -32,34 +32,34 @@ public class Vehiculo {
     private Boolean disponible = true;
 
     @Column(length = 100)
-private String motor;
+    private String motor;
 
-@Column(length = 100)
-private String transmision;
+    @Column(length = 100)
+    private String transmision;
 
-@Column(length = 50)
-private String tipoCombustible;
+    @Column(length = 50)
+    private String tipoCombustible;
 
-@Column(length = 50)
-private String potencia;
+    @Column(length = 50)
+    private String potencia;
 
-@Column(length = 50)
-private String torque;
+    @Column(length = 50)
+    private String torque;
 
-@Column(length = 50)
-private String rendimiento;
+    @Column(length = 50)
+    private String rendimiento;
 
-@Column(length = 50)
-private String traccion;
+    @Column(length = 50)
+    private String traccion;
 
-@Column(length = 50)
-private String velocidadMaxima;
+    @Column(length = 50)
+    private String velocidadMaxima;
 
-@Column(length = 50)
-private String aceleracion;
+    @Column(length = 50)
+    private String aceleracion;
 
-@Column
-private Integer capacidadPasajeros;
+    @Column
+    private Integer capacidadPasajeros;
 
     // Relación DENTRO del mismo microservicio -> sí se usa FK real
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -73,4 +73,3 @@ private Integer capacidadPasajeros;
     @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImagenVehiculo> imagenes = new ArrayList<>();
 }
-
