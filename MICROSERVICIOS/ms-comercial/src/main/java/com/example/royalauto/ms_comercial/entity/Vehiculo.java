@@ -2,11 +2,13 @@ package com.example.royalauto.ms_comercial.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "vehiculo")
+@Table(name = "vehiculo", schema = "comercial")
 @Data
 public class Vehiculo {
 
@@ -14,30 +16,29 @@ public class Vehiculo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
+    private String modelo;
+
     @Column(nullable = false)
     private Integer anio;
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal precio;
 
     @Column(length = 500)
     private String descripcion;
 
     @Column(nullable = false)
-    private Boolean disponible;
+    private Boolean disponible = true;
 
-    @Column(length = 100, nullable = false)
-    private String modelo;
-
-    @Column(precision = 12, scale = 2, nullable = false)
-    private BigDecimal precio;
-
-    // --- RELACIONES ACTUALIZADAS ---
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private Categoria categoria;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "marca_id", nullable = false)
     private Marca marca;
 
-    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ImagenVehiculo> imagenes;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
+
+    @OneToMany(mappedBy = "vehiculo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImagenVehiculo> imagenes = new ArrayList<>();
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "marca")
+@Table(name = "marca", catalog = "comercial")
 @Data
 public class Marca {
 
@@ -12,13 +12,12 @@ public class Marca {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // NN (Not Null) y UQ (Unique) están marcados
-    @Column(length = 100, nullable = false, unique = true)
+    @Column(nullable = false, length = 100, unique = true)
     private String nombre;
 
     @Column(length = 300)
-    private String descripcion;
+    private String logo;
 
     @Column(length = 300)
-    private String logo;
+    private String descripcion;
 }

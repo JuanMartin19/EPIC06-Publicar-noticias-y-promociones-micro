@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "categoria")
+@Table(name = "categoria", schema = "comercial")
 @Data
 public class Categoria {
 
@@ -12,7 +12,6 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // NN (Not Null) y UQ (Unique) están marcados
-    @Column(length = 100, nullable = false, unique = true)
+    @Column(nullable = false, length = 100, unique = true)
     private String nombre;
 }

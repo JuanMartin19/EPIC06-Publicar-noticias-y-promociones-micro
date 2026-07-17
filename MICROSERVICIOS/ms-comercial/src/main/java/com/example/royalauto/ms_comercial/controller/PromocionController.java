@@ -3,6 +3,9 @@ package com.example.royalauto.ms_comercial.controller;
 import com.example.royalauto.ms_comercial.dto.PromocionDTO;
 import com.example.royalauto.ms_comercial.dto.VehiculoDTO;
 import com.example.royalauto.ms_comercial.service.PromocionService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/promociones")
-@CrossOrigin(origins = "http://localhost:5173") // Permite la entrada directa desde tu frontend en React
+@RequiredArgsConstructor
 public class PromocionController {
 
     @Autowired

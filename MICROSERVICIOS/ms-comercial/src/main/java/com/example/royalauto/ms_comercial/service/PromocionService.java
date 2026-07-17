@@ -53,7 +53,7 @@ public class PromocionService {
             Path rutaCompleta = Paths.get(UPLOAD_DIR + nombreArchivo);
             Files.createDirectories(rutaCompleta.getParent());
             Files.write(rutaCompleta, archivo.getBytes());
-            promocion.setImagenUrl("http://localhost:8082/api/imagenes/" + nombreArchivo);
+            promocion.setImagenUrl("http://localhost:8080/api/imagenes/" + nombreArchivo);
         } else if (imagenUrlExterna != null && !imagenUrlExterna.trim().isEmpty()) {
             promocion.setImagenUrl(imagenUrlExterna);
         } else {

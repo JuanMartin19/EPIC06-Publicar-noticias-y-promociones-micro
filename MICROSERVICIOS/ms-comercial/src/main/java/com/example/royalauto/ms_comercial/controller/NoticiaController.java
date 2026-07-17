@@ -2,6 +2,9 @@ package com.example.royalauto.ms_comercial.controller;
 
 import com.example.royalauto.ms_comercial.entity.Noticia;
 import com.example.royalauto.ms_comercial.service.NoticiaService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/noticias")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
 public class NoticiaController {
 
     @Autowired

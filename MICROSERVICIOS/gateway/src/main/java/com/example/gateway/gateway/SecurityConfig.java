@@ -2,39 +2,81 @@ package com.example.gateway.gateway;
 
 import java.util.List;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class SecurityConfig {
 
+    // =========================================================================
+    // 1. FILTRO CORS MAESTRO: Se ejecuta antes que cualquier cosa y evita duplicados
+    // =========================================================================
+    @Bean
+    public FilterRegistrationBean<CorsFilter> customCorsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE); 
+        return bean;
+    }
+
+    // =========================================================================
+    // 2. REGLAS DE SEGURIDAD Y RUTAS
+    // =========================================================================
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // APAGAMOS EL CORS DE SPRING SECURITY para que no interfiera con el filtro maestro de arriba
+            .cors(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                // Lectura: ambos roles pueden
-                .requestMatchers(HttpMethod.GET, "/api/entity-a/**", "/api/entity-b/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Rutas públicas de autenticación
+                .requestMatchers("/oauth2/**", "/login", "/.well-known/**").permitAll()
+                .requestMatchers("/register").hasRole("ADMIN")
 
-                // NUEVO: Hacer PÚBLICA la lectura de imágenes para que cualquiera vea la página
+                // Cotizaciones
+                .requestMatchers(HttpMethod.POST, "/api/cotizaciones").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/cotizaciones/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/cotizaciones/**").hasRole("ADMIN")
+
+                // Catálogo de vehículos
+                .requestMatchers(HttpMethod.GET, "/api/vehiculos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/vehiculos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/vehiculos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/vehiculos/**").hasRole("ADMIN")
+
+                // NUESTRAS RUTAS: Públicas para leer, protegidas para escribir
                 .requestMatchers(HttpMethod.GET, "/api/noticias/**", "/api/promociones/**", "/api/imagenes/**").permitAll()
-                
-                // NUEVO: Solo ADMIN puede crear o borrar imágenes/promociones
                 .requestMatchers(HttpMethod.POST, "/api/noticias/**", "/api/promociones/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/noticias/**", "/api/promociones/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/noticias/**", "/api/promociones/**").hasRole("ADMIN")
 
-                // Escritura: solo ADMIN
+                // Otras entidades genéricas
+                .requestMatchers(HttpMethod.GET, "/api/entity-a/**", "/api/entity-b/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/entity-a/**", "/api/entity-b/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/entity-a/**", "/api/entity-b/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/entity-a/**", "/api/entity-b/**").hasRole("ADMIN")
+
+                // Todo lo demás requiere sesión válida
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -46,8 +88,8 @@ public class SecurityConfig {
 
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("roles"); // el nombre del claim que agregamos
-        grantedAuthoritiesConverter.setAuthorityPrefix(""); // el claim ya trae "ROLE_", no dupliques el prefijo
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
