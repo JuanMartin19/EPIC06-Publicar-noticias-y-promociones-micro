@@ -1,6 +1,5 @@
 package com.example.royalauto.ms_comercial.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
