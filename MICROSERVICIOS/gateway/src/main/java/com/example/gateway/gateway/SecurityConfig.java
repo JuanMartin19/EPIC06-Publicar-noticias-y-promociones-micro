@@ -18,10 +18,6 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 public class SecurityConfig {
-
-    // =========================================================================
-    // 1. FILTRO CORS MAESTRO: Se ejecuta antes que cualquier cosa y evita duplicados
-    // =========================================================================
     @Bean
     public FilterRegistrationBean<CorsFilter> customCorsFilter() {
         CorsConfiguration config = new CorsConfiguration();
@@ -37,10 +33,7 @@ public class SecurityConfig {
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE); 
         return bean;
     }
-
-    // =========================================================================
-    // 2. REGLAS DE SEGURIDAD Y RUTAS
-    // =========================================================================
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -49,7 +42,6 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Rutas públicas de autenticación
                 .requestMatchers("/oauth2/**", "/login", "/.well-known/**").permitAll()
                 .requestMatchers("/register").hasRole("ADMIN")
 
