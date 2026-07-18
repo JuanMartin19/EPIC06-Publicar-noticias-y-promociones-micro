@@ -15,11 +15,20 @@ spring:
     gateway:
       server:
         webmvc:
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
           routes:
             - id: authorization-server
               uri: lb://AUTHORIZATION-SERVER
               predicates:
                 - Path=/register,/oauth2/**,/login,/.well-known/**,/h2-console/**
+              filters:
+                - StripPrefix=0
+
+            - id: ms-cotizaciones
+              uri: lb://MS-COTIZACIONES
+              predicates:
+                - Path=/api/public/cotizaciones-vehiculos/**
               filters:
                 - StripPrefix=0
 
@@ -33,4 +42,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:8761/eureka

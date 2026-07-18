@@ -95,3 +95,4 @@ public class DefaultSecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
+  

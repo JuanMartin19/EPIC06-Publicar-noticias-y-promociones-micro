@@ -38,6 +38,13 @@ public class VehiculoController {
         return ResponseEntity.ok(vehiculoService.obtenerPorId(id));
     }
 
+    // Consulta en lote: usado por otros microservicios (ej. ms-cotizaciones) para
+    // resolver varios vehículos de un jalón en vez de llamar uno por uno
+    @PostMapping("/by-ids")
+    public ResponseEntity<List<VehiculoDTO>> obtenerPorIds(@RequestBody List<Long> ids) {
+        return ResponseEntity.ok(vehiculoService.obtenerPorIds(ids));
+    }
+
     // E1HU1: Crear registros de nuevos vehículos (CRUD)
     @PostMapping
     public ResponseEntity<VehiculoDTO> crear(@RequestBody VehiculoDTO dto) {
@@ -101,5 +108,20 @@ public class VehiculoController {
     public ResponseEntity<Void> eliminarCategoria(@PathVariable Long id) {
         categoriaService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/marcas/{id}")
+    public ResponseEntity<MarcaDTO> actualizarMarca(@PathVariable Long id, @RequestBody MarcaDTO dto) {
+        return ResponseEntity.ok(marcaService.actualizar(id, dto));
+    }
+
+    @PutMapping("/categorias/{id}")
+    public ResponseEntity<CategoriaDTO> actualizarCategoria(@PathVariable Long id, @RequestBody CategoriaDTO dto) {
+        return ResponseEntity.ok(categoriaService.actualizar(id, dto));
+    }
+
+    @GetMapping("/filtrar/anio")
+    public ResponseEntity<List<VehiculoDTO>> filtrarPorAnio(@RequestParam Integer anio) {
+        return ResponseEntity.ok(vehiculoService.filtrarPorAnio(anio));
     }
 }

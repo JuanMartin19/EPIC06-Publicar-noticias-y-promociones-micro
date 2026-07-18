@@ -1,13 +1,14 @@
 package com.example.royalauto.ms_comercial.service;
 
-
 import com.example.royalauto.ms_comercial.dto.VehiculoDTO;
 import com.example.royalauto.ms_comercial.entity.Categoria;
 import com.example.royalauto.ms_comercial.entity.ImagenVehiculo;
 import com.example.royalauto.ms_comercial.entity.Marca;
+import com.example.royalauto.ms_comercial.entity.Promocion;
 import com.example.royalauto.ms_comercial.entity.Vehiculo;
 import com.example.royalauto.ms_comercial.repository.CategoriaRepository;
 import com.example.royalauto.ms_comercial.repository.MarcaRepository;
+import com.example.royalauto.ms_comercial.repository.PromocionRepository;
 import com.example.royalauto.ms_comercial.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class VehiculoService {
     private final VehiculoRepository vehiculoRepository;
     private final MarcaRepository marcaRepository;
     private final CategoriaRepository categoriaRepository;
+    private final PromocionRepository promocionRepository;
 
     // E1HU3: Visualizar el catálogo de autos
     public List<VehiculoDTO> listarTodos() {
@@ -34,6 +36,13 @@ public class VehiculoService {
         Vehiculo vehiculo = vehiculoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vehículo no encontrado con id: " + id));
         return toDTO(vehiculo);
+    }
+
+    // Consulta en lote (ej. para que ms-cotizaciones resuelva varios vehículos con una sola llamada)
+    public List<VehiculoDTO> obtenerPorIds(List<Long> ids) {
+        return vehiculoRepository.findAllById(ids).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
     // E1HU1: Crear registros de nuevos vehículos
@@ -75,23 +84,72 @@ public class VehiculoService {
                 .collect(Collectors.toList());
     }
 
-    // ---------- Conversión manual (sin mapper) ----------
+    public List<VehiculoDTO> filtrarPorAnio(Integer anio) {
+        return vehiculoRepository.findByAnio(anio).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ---------- Conversión manual (sin mapper) FUSIONADA ----------
 
     private VehiculoDTO toDTO(Vehiculo vehiculo) {
         VehiculoDTO dto = new VehiculoDTO();
         dto.setId(vehiculo.getId());
         dto.setModelo(vehiculo.getModelo());
         dto.setAnio(vehiculo.getAnio());
-        dto.setPrecio(vehiculo.getPrecio());
+        dto.setPrecio(vehiculo.getPrecio()); // Campo del pull
         dto.setDescripcion(vehiculo.getDescripcion());
         dto.setDisponible(vehiculo.getDisponible());
         dto.setMarcaId(vehiculo.getMarca().getId());
-        dto.setMarcaNombre(vehiculo.getMarca().getNombre());
+        dto.setMarcaNombre(vehiculo.getMarca().getNombre()); // Campo del pull
         dto.setCategoriaId(vehiculo.getCategoria().getId());
-        dto.setCategoriaNombre(vehiculo.getCategoria().getNombre());
+        dto.setCategoriaNombre(vehiculo.getCategoria().getNombre()); // Campo del pull
+
+        // Lógica de imágenes del pull (lista de Strings)
         dto.setImagenes(vehiculo.getImagenes().stream()
                 .map(ImagenVehiculo::getUrl)
                 .collect(Collectors.toList()));
+
+        // Ficha técnica
+        dto.setMotor(vehiculo.getMotor());
+        dto.setTransmision(vehiculo.getTransmision());
+        dto.setTipoCombustible(vehiculo.getTipoCombustible());
+        dto.setPotencia(vehiculo.getPotencia());
+        dto.setTorque(vehiculo.getTorque());
+        dto.setRendimiento(vehiculo.getRendimiento());
+        dto.setTraccion(vehiculo.getTraccion());
+        dto.setVelocidadMaxima(vehiculo.getVelocidadMaxima());
+        dto.setAceleracion(vehiculo.getAceleracion());
+        dto.setCapacidadPasajeros(vehiculo.getCapacidadPasajeros());
+
+        // --- NUESTROS CAMPOS DE COMPATIBILIDAD (Para el Marketing Dashboard) ---
+        // Llenamos precioOriginal con el precio base del auto
+        dto.setPrecioOriginal(vehiculo.getPrecio());
+
+        // Mapeamos los nombres de marca y categoría a nuestras variables de DTO
+        if (vehiculo.getMarca() != null) {
+            dto.setMarcaVehiculo(vehiculo.getMarca().getNombre());
+        }
+        if (vehiculo.getCategoria() != null) {
+            dto.setCategoriaVehiculo(vehiculo.getCategoria().getNombre());
+        }
+
+        // Foto principal para la vista previa del Admin
+        if (vehiculo.getImagenes() != null && !vehiculo.getImagenes().isEmpty()) {
+            dto.setImagenUrl(vehiculo.getImagenes().get(0).getUrl());
+        } else {
+            dto.setImagenUrl("https://via.placeholder.com/400x220?text=Sin+Foto");
+        }
+        // ---
+
+        // --- Promoción activa (si existe) ---
+        promocionRepository.findByVehiculo_IdAndActivoTrue(vehiculo.getId()).ifPresent(promo -> {
+            dto.setPromocionId(promo.getId());
+            dto.setTipoDescuento(promo.getTipoDescuento());
+            dto.setValorDescuento(promo.getValorDescuento());
+            dto.setPrecioFinal(promo.getPrecioPromocion());
+        });
+
         return dto;
     }
 
@@ -101,6 +159,18 @@ public class VehiculoService {
         vehiculo.setPrecio(dto.getPrecio());
         vehiculo.setDescripcion(dto.getDescripcion());
         vehiculo.setDisponible(dto.getDisponible() != null ? dto.getDisponible() : true);
+
+        // Ficha técnica
+        vehiculo.setMotor(dto.getMotor());
+        vehiculo.setTransmision(dto.getTransmision());
+        vehiculo.setTipoCombustible(dto.getTipoCombustible());
+        vehiculo.setPotencia(dto.getPotencia());
+        vehiculo.setTorque(dto.getTorque());
+        vehiculo.setRendimiento(dto.getRendimiento());
+        vehiculo.setTraccion(dto.getTraccion());
+        vehiculo.setVelocidadMaxima(dto.getVelocidadMaxima());
+        vehiculo.setAceleracion(dto.getAceleracion());
+        vehiculo.setCapacidadPasajeros(dto.getCapacidadPasajeros());
 
         Marca marca = marcaRepository.findById(dto.getMarcaId())
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + dto.getMarcaId()));
@@ -123,4 +193,3 @@ public class VehiculoService {
         return vehiculo;
     }
 }
-
